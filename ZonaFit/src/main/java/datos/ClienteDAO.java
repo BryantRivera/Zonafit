@@ -92,18 +92,57 @@ public class ClienteDAO implements  IClienteDAO{
 
     @Override
     public boolean modificarCliente(Cliente cliente) {
+        PreparedStatement ps;
+        Connection con = getConexion();
+        var sql = "UPDATE cliente SET nombre=?, apellido=?, membresia=?" + " WHERE id = ?";
+        try {
+            ps = con.prepareStatement(sql);
+            ps.setString(1, cliente.getNombre());
+            ps.setString(2, cliente.getApellido());
+            ps.setInt(3, cliente.getMembresia());
+            ps.setInt(4, cliente.getId());
+            ps.execute();
+            return true;
+
+        } catch (Exception e) {
+            System.out.println("Error al modificar cliente: " + e.getMessage());
+        } finally {
+           try {
+               con.close();
+           }catch (Exception e){
+               System.out.println("Error al cerrar la conexion: " + e.getMessage());
+           }
+        }
         return false;
     }
 
     @Override
     public boolean eliminarCliente(Cliente cliente) {
+        PreparedStatement ps;
+        Connection con = getConexion();
+        String sql = "DELETE  FROM cliente WHERE id = ?";
+
+        try {
+            ps = con.prepareStatement(sql);
+            ps.setInt(1, cliente.getId());
+            ps.execute();
+            return true;
+        } catch (Exception e) {
+            System.out.println("Error al eliminar el cliente" + e.getMessage());
+        } finally {
+            try {
+                con.close();
+            } catch (Exception e) {
+                System.out.println("Error al eliminar el error" + e.getMessage());
+            }
+        }
         return false;
     }
 
     public static void main(String[] args) {
+        IClienteDAO clienteDao = new ClienteDAO();
         //Listar clientes
-//        System.out.println("=== Listar Clientes ===");
-          IClienteDAO clienteDao = new ClienteDAO();
+//        System.out.println("=== Listar Clientes ==);
 //        var clientes = clienteDao.listarClientes();
 //        clientes.forEach(System.out::println);
 
@@ -118,10 +157,44 @@ public class ClienteDAO implements  IClienteDAO{
 //        }
 
         //Agregar Cliente
-        var nuevoCliente = new Cliente("Daniel", "Ortiz", 300);
-        var agregado = clienteDao.agregarCliente(nuevoCliente);
-        if (agregado){
-            System.out.println("agregado = " + agregado);
-        }
+//        var nuevoCliente = new Cliente("Daniel", "Ortiz", 200);
+//        var agregado = clienteDao.agregarCliente(nuevoCliente);
+//        if (agregado){
+//            System.out.println("agregado = " + nuevoCliente);
+//        } else {
+//            System.out.println("No se agrego el cliente " + nuevoCliente);
+//        }
+//        //Listar clientes
+//        System.out.println("=== Listar Clientes ==");
+//        var clientes = clienteDao.listarClientes();
+//        clientes.forEach(System.out::println);
+
+        // Modificar cliente
+//        var modificarCliente = new Cliente(9, "Carlos Daniel", "Ortiz", 200);
+//        var modificado = clienteDao.modificarCliente(modificarCliente);
+//        if(modificado)
+//            System.out.println("Cliente modificado : " + modificarCliente);
+//        else
+//            System.out.println("No se modifico cliente: " + modificarCliente);
+//
+//        // Listar clientes
+//        System.out.println("*** Listar Clientes ***");
+//        var clientes = clienteDao.listarClientes();
+//        clientes.forEach(System.out::println);
+
+        //Eliminar cliente
+        var clienteEliminar = new Cliente(9);
+        var eliminado = clienteDao.eliminarCliente(clienteEliminar);
+
+        if(eliminado)
+            System.out.println("Cliente eliminado : " + clienteEliminar);
+        else
+            System.out.println("No se eliminado cliente: " + clienteEliminar);
+
+        // Listar clientes
+        System.out.println("*** Listar Clientes ***");
+        var clientes = clienteDao.listarClientes();
+        clientes.forEach(System.out::println);
+
     }
 }
